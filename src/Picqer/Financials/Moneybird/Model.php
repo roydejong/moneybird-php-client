@@ -277,7 +277,7 @@ abstract class Model
     {
         $array = $this->getArrayWithNestedObjects();
 
-        return json_encode($array, static::JSON_OPTIONS);
+        return $this->filterJsonResult(json_encode($array, static::JSON_OPTIONS));
     }
 
     /**
@@ -286,10 +286,22 @@ abstract class Model
     public function jsonWithNamespace()
     {
         if ($this->namespace !== '') {
-            return json_encode([$this->namespace => $this->getArrayWithNestedObjects()], static::JSON_OPTIONS);
+            return $this->filterJsonResult(json_encode([$this->namespace => $this->getArrayWithNestedObjects()], static::JSON_OPTIONS));
         } else {
             return $this->json();
         }
+    }
+
+    private function filterJsonResult(string $jsonResult): string
+    {
+        // dirty dirty disgusting hacks live here
+        // https://github.com/picqer/moneybird-php-client/issues/276
+
+        $jsonResult = str_replace('"!ARRAYHACK!', '[', $jsonResult);
+        $jsonResult = str_replace('!ARRAYHACK!"', ']', $jsonResult);
+
+        echo $jsonResult;
+        exit;
     }
 
     /**
