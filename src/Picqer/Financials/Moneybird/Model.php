@@ -300,8 +300,7 @@ abstract class Model
         $jsonResult = str_replace('"!ARRAYHACK!', '[', $jsonResult);
         $jsonResult = str_replace('!ARRAYHACK!"', ']', $jsonResult);
 
-        echo $jsonResult;
-        exit;
+        return $jsonResult;
     }
 
     /**
