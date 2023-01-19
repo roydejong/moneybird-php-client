@@ -28,6 +28,7 @@ abstract class InvoiceDetail extends Model
         'created_at',
         'updated_at',
         'product_id',
+        'time_entry_ids',
         'project_id',
         '_destroy',
         'project_id',
