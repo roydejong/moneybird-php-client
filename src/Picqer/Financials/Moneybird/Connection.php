@@ -124,7 +124,7 @@ class Connection
     /**
      * Insert a Middleware for the Guzzle Client.
      *
-     * @param $middleWare
+     * @param  $middleWare
      */
     public function insertMiddleWare($middleWare)
     {
@@ -189,7 +189,7 @@ class Connection
 
     /**
      * @param  string  $method
-     * @param $endpoint
+     * @param  $endpoint
      * @param  null  $body
      * @param  array  $params
      * @param  array  $headers
@@ -290,10 +290,10 @@ class Connection
      *
      * @throws ApiException
      */
-    public function delete($url, $body = null)
+    public function delete($url, $body = null, $params = [])
     {
         try {
-            $request = $this->createRequest('DELETE', $this->formatUrl($url, 'delete'), $body);
+            $request = $this->createRequest('DELETE', $this->formatUrl($url, 'delete'), $body, $params = []);
             $response = $this->client()->send($request);
 
             return $this->parseResponse($response);
@@ -420,7 +420,7 @@ class Connection
     private function parseResponse(Response $response)
     {
         try {
-            Psr7\Message::rewindBody($response);
+            $response->getBody()->rewind();
             $json = json_decode($response->getBody()->getContents(), true);
 
             return $json;
@@ -430,7 +430,7 @@ class Connection
     }
 
     /**
-     * @param $headerLine
+     * @param  $headerLine
      * @return bool | array
      */
     private function getNextParams($headerLine)
@@ -483,7 +483,7 @@ class Connection
         $response = $this->client()->post($this->getTokenUrl(), $body);
 
         if ($response->getStatusCode() == 200) {
-            Psr7\Message::rewindBody($response);
+            $response->getBody()->rewind();
             $body = json_decode($response->getBody()->getContents(), true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
@@ -517,7 +517,7 @@ class Connection
             return new ApiException('Response is NULL.', 0, $exception);
         }
 
-        Psr7\Message::rewindBody($response);
+        $response->getBody()->rewind();
         $responseBody = $response->getBody()->getContents();
         $decodedResponseBody = json_decode($responseBody, true);
 
@@ -545,8 +545,8 @@ class Connection
         if ($response->getStatusCode() === 429 && count($rateLimitRemainingHeaders) > 0) {
             $exception = new TooManyRequestsException('Error ' . $response->getStatusCode() . ': ' . $errorMessage, $response->getStatusCode());
             $exception->retryAfterNumberOfSeconds = (int) current($rateLimitRemainingHeaders);
-            $exception->currentRateLimit = (int) $response->getHeader('RateLimit-Limit');
-            $exception->rateLimitResetsAfterTimestamp = (int) $response->getHeader('RateLimit-Reset');
+            $exception->currentRateLimit = (int) current($response->getHeader('RateLimit-Limit'));
+            $exception->rateLimitResetsAfterTimestamp = (int) current($response->getHeader('RateLimit-Reset'));
 
             throw $exception;
         }

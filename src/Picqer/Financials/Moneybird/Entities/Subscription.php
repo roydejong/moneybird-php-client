@@ -25,12 +25,19 @@ class Subscription extends Model
         'id',
         'start_date',
         'product_id',
+        'amount',
+        'discount',
         'contact_id',
+        'contact_person_id',
         'end_date',
         'reference',
         'document_style_id',
         'frequency',
         'frequency_type',
+        'mergeable',
+        'prices_are_incl_tax',
+        'subscription_prices_are_incl_tax',
+        'subscription_products',
     ];
 
     /**

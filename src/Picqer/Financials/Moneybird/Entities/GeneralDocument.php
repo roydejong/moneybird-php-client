@@ -33,6 +33,7 @@ class GeneralDocument extends Model
         'updated_at',
         'notes',
         'attachments',
+        'version',
     ];
 
     /**
@@ -44,4 +45,14 @@ class GeneralDocument extends Model
      * @var string
      */
     protected $namespace = 'general_document';
+
+    /**
+     * @var array
+     */
+    protected $multipleNestedEntities = [
+        'attachments' => [
+            'entity' => GeneralDocumentAttachment::class,
+            'type' => self::NESTING_TYPE_ARRAY_OF_OBJECTS,
+        ],
+    ];
 }
